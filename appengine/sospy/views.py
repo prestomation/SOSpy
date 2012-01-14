@@ -6,43 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from google.appengine.api import users
 
-C2DMUSER = "droidfiledrop@gmail.com"
-KEY_DEV_NAME = "devname"
-
-
-class RequireGAEAuth(object):
-    #Wrap a View to require authentication and pass the current GAE user
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self, request, **kwargs):
-        user = users.get_current_user()
-        if not user:
-            #make them login
-            logging.info("No user logged in: redirecting..")
-            return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
-        else:
-            logging.info("User %s logged in!" % user.nickname())
-            return self.func(user, request, kwargs)
-
-class RequireAFDUser(object):
-    #Wrap a View to require authentication and pass the current AFD user
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self,  request, **params):
-        #TODO Eliminate duplication with RequireGAEAuth
-        user = users.get_current_user()
-        if not user:
-            #make them login
-            return HttpResponseRedirect(users.create_login_url(request.get_full_path()))
-        else:
-            try:
-                user = User.objects.get(userid = user.user_id())
-            except User.DoesNotExist:
-                return HttpResponse("No devices registered")
-            else:
-                return self.func(user, request, params)
+C2DMUSER = "sospyc2dm@gmail.com"
 
 from models import TargetDevice, SpyInfo, C2DMInfo
 
