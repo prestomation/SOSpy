@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="greeting">SOSpy is configured. Your SOSpyID is %1$s.
+	\nRecord this for use at sospyer.appspot.com/api/spy/%1$s or in the SOListener app</string>
+	<string name="app_name">SOSpy</string>
+	
+</resources>

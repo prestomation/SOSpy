@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load filetransfers %}
+{% block title %}Spy{% endblock %}
+
+{% block content %}
+<h1>Spy</h1>
+<table>
+{% for info in info_list %}
+    <tr>
+        <td>
+            {{ info.title }}
+        </td>
+        <td>
+            {{ info.text }}
+        </td>
+        
+    </tr>
+{% endfor %}
+
+</table>
+{% endblock %}
