@@ -65,8 +65,7 @@ public class AppEngineClient {
 				} catch (Exception e) {
 					Log.e(SetupActivity.TAG, e.toString());
 				}
-				Log.d(SetupActivity.TAG, "Sent spy data");
-				Log.d(SetupActivity.TAG, title + " " + text);
+				Log.d(SetupActivity.TAG, "Sent spy data: " + title + " " + text);
 
 			}
 		}).start();

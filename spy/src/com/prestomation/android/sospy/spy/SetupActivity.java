@@ -1,29 +1,13 @@
 package com.prestomation.android.sospy.spy;
 
-import java.util.ArrayList;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.c2dm.C2DMessaging;
 
 public class SetupActivity extends Activity {
 	public static final String PREF_DEVICE_ID = "devID";
@@ -52,6 +36,7 @@ public class SetupActivity extends Activity {
 	}
 
 	private void setScreenContent(int screenId) {
+		//We only have one view, but we've got framework here incase this app expands
 		setContentView(screenId);
 
 		switch (screenId) {
@@ -73,5 +58,6 @@ public class SetupActivity extends Activity {
 		greetingText.setText(formattedGreeting);
 
 	}
+
 
 }

