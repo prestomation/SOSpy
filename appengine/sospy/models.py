@@ -20,6 +20,7 @@ class SpyInfo(models.Model):
     device = models.ForeignKey(TargetDevice)
     title = models.CharField(max_length=50)
     text = models.CharField(max_length=256)
+    datetime = models.DateTimeField(auto_now_add=True)
 
 class C2DMInfo(models.Model):
     user = models.CharField(max_length=100, primary_key = True)
