@@ -5,6 +5,12 @@
     dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
     lang="{% firstof LANGUAGE_CODE 'en' %}">
+    <script src="http://www.google.com/jsapi"></script>
+    <script>google.load("jquery", "1.7.1");</script>
+    <script>google.load("jqueryui", "1.8.16");</script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.17/themes/smoothness/jquery-ui.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="/static/style.css" type="text/css" media="all" />
+
   <head>
     <title>{% block title %}{% endblock %} - SOSpy</title>
 

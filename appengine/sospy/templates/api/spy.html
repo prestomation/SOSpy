@@ -2,20 +2,60 @@
 {% load filetransfers %}
 {% block title %}Spy{% endblock %}
 
-{% block content %}
-<h1>Spy</h1>
-<table>
-{% for info in info_list %}
-    <tr>
-        <td>
-            {{ info.title }}
-        </td>
-        <td>
-            {{ info.text }}
-        </td>
-        
-    </tr>
-{% endfor %}
+{% block scripts %}
+{% endblock %}
 
+
+{% block content %}
+<script src="/static/jquery.tablesorter.min.js"></script>
+
+<h1>Spy</h1>
+
+
+
+<table id="spyTable" class="tablesorter" cellspacing="1">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Text</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+</tbody>
+
+{% for info in info_list %}
+<tr>
+    <td>
+        {{ info.title }}
+    </td>
+    <td>
+        {{ info.text }}
+    </td>
+    <td>
+        {{ info.datetime|date:"fA D d M Y" }}
+    </td>
+
+</tr>
+{% endfor %}
+</tbody>
 </table>
+<br/>
+<button id="deleteSpyInfo" >Delete all data for this device</button>
+
+<script>
+    $(document).ready(function(){
+        $("#spyTable").tablesorter({sortList: [[2,0], [0,0]]} ); 
+        $("#deleteSpyInfo").button()
+        $("#deleteSpyInfo").click(function () {
+            $.ajax({
+                type: "DELETE",
+                url: "",
+                success: function(){
+                    $("#spyTable").fadeOut("slow");
+                }
+            });
+        });
+    });
+</script>
+
 {% endblock %}

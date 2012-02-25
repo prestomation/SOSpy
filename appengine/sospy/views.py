@@ -29,7 +29,7 @@ def spy(request, devid=None):
         #print "we shouldn't get here"
 
 
-        return direct_to_template(request, "api/spy.html", {'info_list' : infos})
+        return direct_to_template(request, "api/spy.html", {'info_list' : infos, 'devid' : devid})
 
     elif request.method == "POST":
         logging.info("a spy POST")
@@ -64,18 +64,10 @@ def spy(request, devid=None):
         #delete given device
         try:
             device = TargetDevice.objects.get(Uuid = devid)
-        except Device.DoesNotExist:
+        except TargetDevice.DoesNotExist:
             return HttpResponseBadRequest("Device does not exist")
         device.delete()
-
-        try:
-            device = Device.objects.get(user = user)
-        except Device.DoesNotExist:
-            #Delete user if last device
-            user.delete()
-        return HttpResponse("Device %s deleted" % devname)
-
-
+        return HttpResponse("Deleted", content_type="text/plain")
 
     else:
         return HttpResponse("Bad Request", content_type="text/plain")
