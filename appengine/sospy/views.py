@@ -7,13 +7,15 @@ from django.core.urlresolvers import reverse
 from google.appengine.api import users
 
 C2DMUSER = "sospyc2dm@gmail.com"
+REGISTRATION_STRING = "SOSPYREGISTER"
 
-from models import TargetDevice, SpyInfo, C2DMInfo
+from models import MonitorDevice, TargetDevice, SpyInfo, C2DMInfo
 
 def spy(request, devid=None):
     """
     POSTs a new piece of data
     GETS data for a particular target
+    DELETE deletes all data for that device
     """
 
     if request.method == "GET":
@@ -43,7 +45,7 @@ def spy(request, devid=None):
         logging.info("Title: " + title)
         logging.info("Text: " + text)
         try:
-            #this  TargetDevice is not new
+            #this TargetDevice is not new
             device = TargetDevice.objects.get(Uuid = devid)
             logging.info("Welcome back.." + devid)
         except TargetDevice.DoesNotExist:
@@ -51,13 +53,14 @@ def spy(request, devid=None):
             logging.info("This is a new device: " + devid)
             device.save()
 
-        info = SpyInfo(device = device, title = title, text = text)
-        info.save()
-        
-        #Notify listeners for this device
-        notify(info)
+        if title is not REGISTRATION_STRING:
+            #Don't save this if it's the registration string
+            info = SpyInfo(device = device, title = title, text = text)
+            info.save()
+            #Notify listeners for this device
+            notify(info)
 
-        return HttpResponse("Notified")
+        return HttpResponse()
 
     elif request.method == "DELETE":
 
@@ -73,68 +76,100 @@ def spy(request, devid=None):
         return HttpResponse("Bad Request", content_type="text/plain")
 
 
+def register(request):
+
+    
+    if request.method == "POST":
+        logging.info("a spy POST")
+
+        c2dmID = request.POST.get("deviceRegID", None)
+        sospyid = request.POST.get("sospyid", None)
+        uuid = request.POST.get("uuid", None)
+        if not sospyid or not c2dmID or not uuid:
+            #Must register a sospyid
+            return HttpResponseBadRequest()
+        logging.info("C2DMID: " + c2dmID)
+        logging.info("SOSpyID: " + sospyid)
+        logging.info("uuid: " + uuid)
+
+        try:
+            try:
+                #If they are reregistering this ID, update the c2dmid/sospyid
+                device = MonitorDevice.objects.get(Uuid = uuid)
+                logging.info("Updating an existing device")
+                device.C2DMID = c2dmID
+                spydevice = TargetDevice.objects.get(Uuid = sospyid)
+
+                device.sospyid = spydevice
+            except MonitorDevice.DoesNotExist:
+                spydevice = TargetDevice.objects.get(Uuid = sospyid)
+
+                device = MonitorDevice(Uuid = uuid, C2DMID = c2dmID, sospyid = spydevice)
+                logging.info("Created device, uuid: %s c2dmid %s sospyid %s" % (device.Uuid, device.C2DMID, device.sospyid ))
+            device.save()
+            return HttpResponse( "Uuid: %s C2DMID: %s SOSpyID: %s" % (device.Uuid, device.C2DMID, device.sospyid))
+        except TargetDevice.DoesNotExist:
+            logging.info("The sospyid %s does not exist" % sospyid)
+            return HttpResponseNotFound()
+
+            return HttpResponse( "Uuid: %s C2DMID: %s SOSpyID: %s" % (device.Uuid, device.C2DMID, device.sospyid))
+    return HttpResponseBadRequest()
+        
+
+
+
 from django.core.urlresolvers import reverse
 from django.views.generic.simple import direct_to_template
 
+import urllib
+import urllib2
+
 def notify(info):
 
-    try:
-        spy = info.device.spy
-    except e:
-        #Nobody is spying on this target
-        print e
-        return HttpResponseNotFound("No such device")
+    logging.info("Notifying")
 
-    logging.info("Notifying device %s" % (spy))
+    monDevices = info.device.monitordevice_set.all()
+    #monDevices =  MonitorDevice.objects.filter(sospyid = spyDevice)
 
-    try:
+    for device in monDevices:
+        logging.info("Notifying device %s" % (device.Uuid))
+
         c2dmUser = C2DMInfo.objects.get(user=C2DMUSER)
         authToken = c2dmUser.authtoken
-    except C2DMInfo.DoesNotExist:
-        return HttpResponseServerError("Error!")
 
-    try:
-        return notifyHelper(spy,info,authToken)
-    except urllib2.HTTPError, e:
-        #Token expired, get a new one
-        if e.code == 401:
-            logging.error("Auth expired")
-            newToken = get_google_authtoken(c2dmUser.user, c2dmUser.password)
-            logging.error("new token: " + newToken)
-            c2dmUser.authtoken = newToken
-            c2dmUser.save()
-            return notifyHelper(spy, info, authtoken)
-        else:
-            raise
+        try:
+            notifyHelper(device,info,authToken)
+        except urllib2.HTTPError, e:
+            #Token expired, get a new one
+            if e.code == 401:
+                logging.error("Auth expired")
+                newToken = get_google_authtoken(c2dmUser.user, c2dmUser.password)
+                logging.error("new token: " + newToken)
+                c2dmUser.authtoken = newToken
+                c2dmUser.save()
+                return notifyHelper(device, info, newToken)
+            else:
+                raise
 
 
 
-def notifyHelper(spy, info, authtoken):
+def notifyHelper(device, info, authtoken):
     responses = []
     values = {
             'data.title' : info.title, # info title
             'data.text' : info.text, # info text
-            'registration_id' : device.c2dmid,
-            'collapse_key' : "akey" #doesn't mean anything. we're tiny
+            'registration_id' : device.C2DMID,
+            'collapse_key' : "akey" #doesn't mean anything, we aren't going to resend notifications
             }
     body = urllib.urlencode(values)
     request = urllib2.Request('http://android.clients.google.com/c2dm/send', body)
     request.add_header('Authorization', 'GoogleLogin auth=' + authtoken)
     response = urllib2.urlopen(request) 
-    logging.info("Notified %s UUID: %s" % (spy.C2DMID, spy.Uuid))
+    logging.info("Notified %s UUID: %s" % (device.C2DMID, device.Uuid))
     logging.info("Response Code: " + str(response.code))
-    responses.append(response)
 
-    returnResponse = HttpResponse("OK!")
-    for response in responses:
-        if (response.code != 200):
-            returnResponse = HttpResponse("There was an error in the C2DM process")
-    return returnResponse
-
-
-
-
-
+    if (response.code != 200):
+        logging.error("There was an error in the C2DM process")
 
 def get_google_authtoken(email_address, password):
     """

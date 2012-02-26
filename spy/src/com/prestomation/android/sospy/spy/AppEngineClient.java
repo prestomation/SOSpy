@@ -36,6 +36,7 @@ import android.util.Log;
 public class AppEngineClient {
 
 	static final String BASE_URL = "https://sospyer.appspot.com/api/spy/";
+	public static final String REGISTRATION_STRING = "SOSPYREGISTER";
 	private final String mDevID;
 
 	public AppEngineClient(String devID) {

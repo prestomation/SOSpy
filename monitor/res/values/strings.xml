@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="options_greeting">The SOSpy Monitor! is configured.</string>
+	<string name="app_name">SOSpy Monitor</string>
+	<string name="select_account">Please select the account to use:</string>
+	<string name="select_options">Options:</string>
+</resources>

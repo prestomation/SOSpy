@@ -25,8 +25,14 @@ public class SetupActivity extends Activity {
 		{
 			//If this is the first run, we must save off our unique ID
 			SharedPreferences.Editor editor =  prefs.edit();
-			editor.putString(PREF_DEVICE_ID, Secure.getString(this.getContentResolver(), Secure.ANDROID_ID));
+			String devID = Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
+			editor.putString(PREF_DEVICE_ID, devID);
 			editor.commit();
+			
+			//Sent a special token to the server so this device gets created server side
+			AppEngineClient client = new AppEngineClient(devID);
+			client.sendSpyData(AppEngineClient.REGISTRATION_STRING,"");
+
 		}
 		
 		

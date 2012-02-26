@@ -7,15 +7,13 @@ class Device(models.Model):
     Uuid = models.CharField(max_length=128, unique=True)
     class Meta:
         abstract = True
-
+class TargetDevice(Device):
+    pass
 
 #A device to receive notifications on new info from a target device
 class MonitorDevice(Device):
-    nickname = models.CharField(max_length=400)
     C2DMID = models.CharField(max_length=300)
-
-class TargetDevice(Device):
-    spy = models.ForeignKey(MonitorDevice, null = True)
+    sospyid = models.ForeignKey(TargetDevice)
 
 #Info uploaded by the SOSpy mobile app
 class SpyInfo(models.Model):
