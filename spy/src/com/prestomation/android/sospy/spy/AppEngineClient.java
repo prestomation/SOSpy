@@ -43,7 +43,7 @@ public class AppEngineClient {
 		this.mDevID = devID;
 	}
 
-	public void sendSpyData(final String title, final String text) {
+	public void sendSpyData(final String title, final String text, final String datetime) {
 		// Spawn a new thread because we can't do network IO in the main thread
 		// in ICS
 		new Thread(new Runnable() {
@@ -57,6 +57,7 @@ public class AppEngineClient {
 					List<NameValuePair> params = new ArrayList<NameValuePair>();
 					params.add(new BasicNameValuePair("title", title));
 					params.add(new BasicNameValuePair("text", text));
+					params.add(new BasicNameValuePair("datetime", datetime));
 
 					UrlEncodedFormEntity entity = new UrlEncodedFormEntity(params, "UTF-8");
 					((HttpPost) request).setEntity(entity);

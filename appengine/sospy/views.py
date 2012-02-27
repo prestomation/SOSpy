@@ -5,6 +5,7 @@ from django.utils import simplejson
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse
 from google.appengine.api import users
+import datetime, time
 
 C2DMUSER = "sospyc2dm@gmail.com"
 REGISTRATION_STRING = "SOSPYREGISTER"
@@ -42,8 +43,15 @@ def spy(request, devid=None):
 
         title = request.POST.get("title", "title")
         text = request.POST.get("text","text")
+        try:
+            #datetime from android is in int(microseconds), while datetime wants float(seconds)
+            date= datetime.datetime.utcfromtimestamp(float(request.POST["datetime"])/1000.)
+        except Exception, e:
+            #if the datetime is malformed, use current time
+            date = datetime.datetime.utcfromtimestamp(time.time())
         logging.info("Title: " + title)
         logging.info("Text: " + text)
+        logging.info("datetime: " + str(date.timetuple()))
         try:
             #this TargetDevice is not new
             device = TargetDevice.objects.get(Uuid = devid)
@@ -53,9 +61,9 @@ def spy(request, devid=None):
             logging.info("This is a new device: " + devid)
             device.save()
 
-        if title is not REGISTRATION_STRING:
+        if title =! REGISTRATION_STRING:
             #Don't save this if it's the registration string
-            info = SpyInfo(device = device, title = title, text = text)
+            info = SpyInfo(device = device, title = title, text = text, datetime = date)
             info.save()
             #Notify listeners for this device
             notify(info)

@@ -20,7 +20,7 @@ class SpyInfo(models.Model):
     device = models.ForeignKey(TargetDevice)
     title = models.CharField(max_length=50)
     text = models.CharField(max_length=256)
-    datetime = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField(auto_now_add=False)
 
 #Google Auth info for C2DM push notifications
 class C2DMInfo(models.Model):

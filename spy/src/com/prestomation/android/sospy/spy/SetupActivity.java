@@ -31,7 +31,7 @@ public class SetupActivity extends Activity {
 			
 			//Sent a special token to the server so this device gets created server side
 			AppEngineClient client = new AppEngineClient(devID);
-			client.sendSpyData(AppEngineClient.REGISTRATION_STRING,"");
+			client.sendSpyData(AppEngineClient.REGISTRATION_STRING,"", "");
 
 		}
 		
