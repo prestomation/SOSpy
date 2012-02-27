@@ -32,6 +32,15 @@ public class SmsService extends Service {
 
 		final SharedPreferences prefs = Prefs.get(this);
 		SharedPreferences.Editor prefsEdit = prefs.edit();
+		
+		//Wait 10 seconds to make sure the sms content provider has stabilized. 
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			//pass, if we get interrupted...so what?
+		}
+
+		
 		String currentTime = String.valueOf(System.currentTimeMillis());
 		Log.i(SetupActivity.TAG, "Current Time: " + currentTime);
 
