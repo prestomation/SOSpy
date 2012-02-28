@@ -71,9 +71,9 @@ def spy(request, devid=None):
         #delete given device
         try:
             device = TargetDevice.objects.get(Uuid = devid)
+            infos = device.spyinfo_set.all().delete()
         except TargetDevice.DoesNotExist:
             return HttpResponseBadRequest("Device does not exist")
-        device.delete()
         return HttpResponse("Deleted", content_type="text/plain")
 
     else:
