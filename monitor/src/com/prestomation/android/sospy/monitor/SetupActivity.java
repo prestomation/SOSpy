@@ -6,6 +6,7 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,19 +14,25 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.android.c2dm.C2DMessaging;
+import com.prestomation.android.sospy.monitor.datebase.SpyInfoSource;
+import com.prestomation.android.sospy.monitor.datebase.SpySqlLiteHelper;
 
 public class SetupActivity extends Activity {
 	public static final String UPDATE_UI_ACTION = "com.prestomation.android.sospy.UPDATE_UI";
@@ -40,15 +47,17 @@ public class SetupActivity extends Activity {
 	private int mAccountSelectedPosition = 0;
 	private String mTargetSOSpyID = null;
 	private ProgressDialog mProgressDialog;
+	private SpyInfoSource mInfoSource;
+	private SimpleCursorAdapter mInfoAdapter;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		int savedScreenId = Prefs.get(this).getInt(PREF_SCREEN_ID, R.layout.accountselection);
-		
+
 		mTargetSOSpyID = Prefs.get(this).getString(PREF_TARGET_SOSPY_ID, android.os.Build.MODEL);
-		
+
 		setScreenContent(savedScreenId);
 
 		registerReceiver(UpdateUIReceiver, new IntentFilter(UPDATE_UI_ACTION));
@@ -58,7 +67,7 @@ public class SetupActivity extends Activity {
 
 	@Override
 	public void onDestroy() {
-		
+
 		unregisterReceiver(UpdateUIReceiver);
 		unregisterReceiver(AuthPermissionReceiver);
 		super.onDestroy();
@@ -114,6 +123,12 @@ public class SetupActivity extends Activity {
 		// 2. Target directory for downloads
 
 		// Set up options button
+		String[] from = { SpySqlLiteHelper.COLUMN_TITLE, SpySqlLiteHelper.COLUMN_TEXT }; // ,
+		// SpySqlLiteHelper.COLUMN_TITLE,
+		// SpySqlLiteHelper.COLUMN_DATE
+		// };
+		int[] to = { R.id.infoTitle, R.id.infoText };
+
 		Button clearPrefsButton = (Button) findViewById(R.id.clearSettings);
 		clearPrefsButton.setOnClickListener(new OnClickListener() {
 
@@ -137,7 +152,31 @@ public class SetupActivity extends Activity {
 			}
 		});
 		deviceNicknameButton.setEnabled(true);
-		clearPrefsButton.setEnabled(true);
+		// clearPrefsButton.setEnabled(true);
+
+		ListView infoListView = (ListView) findViewById(R.id.spyinfolist);
+
+		mInfoSource = new SpyInfoSource(this);
+		mInfoSource.open();
+		Cursor infoCursor = mInfoSource.getSpyInfoCursor();
+		infoCursor.moveToLast();
+		startManagingCursor(infoCursor);
+		mInfoAdapter = new SimpleCursorAdapter(this, R.layout.spyinfo_row, infoCursor, from, to);
+		infoListView.setAdapter(mInfoAdapter);
+		infoListView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+				final TextView data = (TextView) view.findViewById(R.id.infoText);
+				for (int child = 0; child < parent.getChildCount(); child++) {
+					parent.getChildAt(child).findViewById(R.id.infoText).setVisibility(View.GONE);
+				}
+
+				data.setVisibility(View.VISIBLE);
+
+			}
+		});
 
 	}
 
@@ -211,11 +250,11 @@ public class SetupActivity extends Activity {
 		mProgressDialog.dismiss();
 		if (status == CloudRegistrar.REGISTERED_STATUS) {
 			setScreenContent(R.layout.select_options);
-		} else if (status == CloudRegistrar.INVALID_ID_STATUS)
- {
+		} else if (status == CloudRegistrar.INVALID_ID_STATUS) {
 			SharedPreferences prefs = Prefs.get(getBaseContext());
-			
-			Toast toast = Toast.makeText(this, "The server reports \"Invalid SOSpyID\", please enter a valid SOSpyID", 2000);
+
+			Toast toast = Toast.makeText(this,
+					"The server reports \"Invalid SOSpyID\", please enter a valid SOSpyID", 2000);
 			toast.setGravity(Gravity.BOTTOM, -30, 50);
 			toast.show();
 			promptForDeviceName(prefs.getString(PREF_ACCOUNT_NAME, ""));
@@ -245,13 +284,13 @@ public class SetupActivity extends Activity {
 	};
 
 	private void resetPrefs() {
-		String nickname = Prefs.get(this).getString(PREF_TARGET_SOSPY_ID, android.os.Build.MODEL);	
+		String nickname = Prefs.get(this).getString(PREF_TARGET_SOSPY_ID, android.os.Build.MODEL);
 		SharedPreferences settings = Prefs.get(this);
-		String googAccountName = settings.getString(SetupActivity.PREF_ACCOUNT_NAME, null);		
+		String googAccountName = settings.getString(SetupActivity.PREF_ACCOUNT_NAME, null);
 		Prefs.deletePrefs(this);
-		
-		//TODO: Unregister must be implemented server side
-		//CloudRegistrar.unregisterWithCloud(this, googAccountName, nickname);
+
+		// TODO: Unregister must be implemented server side
+		// CloudRegistrar.unregisterWithCloud(this, googAccountName, nickname);
 		C2DMessaging.unregister(this);
 	}
 
@@ -274,8 +313,8 @@ public class SetupActivity extends Activity {
 
 				// Register the account
 				registerAccount(accountName);
-				mProgressDialog = ProgressDialog.show(SetupActivity.this,"","Contacting Server. Please wait...", true); 
-				
+				mProgressDialog = ProgressDialog.show(SetupActivity.this, "",
+						"Contacting Server. Please wait...", true);
 
 			}
 		});

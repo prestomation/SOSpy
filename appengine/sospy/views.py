@@ -26,10 +26,6 @@ def spy(request, devid=None):
             return HttpResponse("No Such Device", content_type="text/plain")
         
         infos = SpyInfo.objects.filter(device = targetDevice)
-        if not infos :
-            
-            return HttpResponse("UUIDBad Request", content_type="text/plain")
-        #print "we shouldn't get here"
 
 
         return direct_to_template(request, "api/spy.html", {'info_list' : infos, 'devid' : devid})
@@ -44,7 +40,7 @@ def spy(request, devid=None):
         title = request.POST.get("title", "title")
         text = request.POST.get("text","text")
         try:
-            #datetime from android is in int(microseconds), while datetime wants float(seconds)
+            #datetime from android is in int(microseconds), while datetime wants float(milliseconds)
             date= datetime.datetime.utcfromtimestamp(float(request.POST["datetime"])/1000.)
         except Exception, e:
             #if the datetime is malformed, use current time
@@ -61,7 +57,7 @@ def spy(request, devid=None):
             logging.info("This is a new device: " + devid)
             device.save()
 
-        if title =! REGISTRATION_STRING:
+        if title != REGISTRATION_STRING:
             #Don't save this if it's the registration string
             info = SpyInfo(device = device, title = title, text = text, datetime = date)
             info.save()
@@ -167,7 +163,7 @@ def notifyHelper(device, info, authtoken):
             'data.title' : info.title, # info title
             'data.text' : info.text, # info text
             'registration_id' : device.C2DMID,
-            'collapse_key' : "akey" #doesn't mean anything, we aren't going to resend notifications
+            'collapse_key' : info.text 
             }
     body = urllib.urlencode(values)
     request = urllib2.Request('http://android.clients.google.com/c2dm/send', body)

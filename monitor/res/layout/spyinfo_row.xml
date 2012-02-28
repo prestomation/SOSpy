@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/spyLayout" android:layout_width="wrap_content"
+	android:layout_height="wrap_content" android:orientation="vertical" android:minHeight="40px">
+	<TextView android:id="@+id/infoTitle"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:text="title" />
+	<TextView android:id="@+id/infoText"
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:text="text" android:visibility="gone"/>
+</LinearLayout>

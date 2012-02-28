@@ -18,6 +18,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.google.android.c2dm.C2DMBaseReceiver;
+import com.prestomation.android.sospy.monitor.datebase.SpyInfo;
+import com.prestomation.android.sospy.monitor.datebase.SpyInfoSource;
 
 public class C2DMReceiver extends C2DMBaseReceiver {
 
@@ -59,9 +61,18 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 		mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Log.i(TAG, "Title: " + title);
 		Log.i(TAG, "Text: " + text);
+		
+		SpyInfoSource infoSource = new SpyInfoSource(getApplicationContext());
+		infoSource.open();
+		
+		SpyInfo spyinfo = infoSource.createSpyInfo(title, text, System.currentTimeMillis());
+		Log.e(TAG, "spyinfo " + spyinfo);
+		 
+		
+		
 
 		playNotificationSound(context);
-		Notification mNotification = new Notification(R.drawable.icon, "Notify", System
+		Notification mNotification = new Notification(R.drawable.icon, title, System
 				.currentTimeMillis());
 		mNotification.setLatestEventInfo(getApplicationContext(), title, text, PendingIntent
 				.getActivity(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
