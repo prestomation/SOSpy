@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class SmsReceiver extends BroadcastReceiver {
+public class SpyReceiver extends BroadcastReceiver {
 
 	public static final String SMS_TITLE = "SMS From ";
 	public static final int FIFTEEN_MINUTES_IN_MS = 900000;
@@ -20,12 +20,12 @@ public class SmsReceiver extends BroadcastReceiver {
 		Log.i(SetupActivity.TAG, "onReceive..");
 		// Tell our service to check for new messages
 		// We simply use the receiving of a new message as a trigger
-		context.startService(new Intent(context, SmsService.class));
+		context.startService(new Intent(context, SpyService.class));
 
 		
 		
 		//Set an alarm to check for new SMS every fifteen minutes
-		Intent smsChecker = new Intent(context, SmsReceiver.class);
+		Intent smsChecker = new Intent(context, SpyReceiver.class);
 		PendingIntent recurringCheck = PendingIntent.getBroadcast(context, 0, smsChecker,
 				PendingIntent.FLAG_CANCEL_CURRENT);
 		

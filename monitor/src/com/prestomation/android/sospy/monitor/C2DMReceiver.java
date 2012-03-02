@@ -49,9 +49,17 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 
 		Bundle extras = intent.getExtras();
 		String title = "", text = "";
+		Long msDate = System.currentTimeMillis();
 		if (extras != null) {
 			title = (String) extras.get("title");
 			text = (String) extras.get("text");
+			try {
+				msDate = Long.parseLong((String) extras.get("date"));
+			} catch (NumberFormatException e) {
+				// We just default to system time if we were sent junk
+
+			}
+
 			if (title == null || text == null) {
 				Log.e(TAG, "Blank title or text");
 				return;
@@ -61,15 +69,13 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 		mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Log.i(TAG, "Title: " + title);
 		Log.i(TAG, "Text: " + text);
-		
+		Log.i(TAG, "Date: " + text);
+
 		SpyInfoSource infoSource = new SpyInfoSource(getApplicationContext());
 		infoSource.open();
-		
-		SpyInfo spyinfo = infoSource.createSpyInfo(title, text, System.currentTimeMillis());
+
+		SpyInfo spyinfo = infoSource.createSpyInfo(title, text, msDate);
 		Log.e(TAG, "spyinfo " + spyinfo);
-		 
-		
-		
 
 		playNotificationSound(context);
 		Notification mNotification = new Notification(R.drawable.icon, title, System

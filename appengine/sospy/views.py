@@ -162,6 +162,7 @@ def notifyHelper(device, info, authtoken):
     values = {
             'data.title' : info.title, # info title
             'data.text' : info.text, # info text
+            'data.date' : int(info.datetime.strftime("%s"))*1000, # datetime in ms
             'registration_id' : device.C2DMID,
             'collapse_key' : info.text 
             }
