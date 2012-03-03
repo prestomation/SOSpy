@@ -81,7 +81,7 @@ public class SetupActivity extends Activity {
 		String formattedGreeting = String.format(greeting, mDevID);
 		TextView greetingText = (TextView) findViewById(R.id.greetingText);
 		greetingText.setText(formattedGreeting);
-		//promptForIDDestination();
+		promptForIDDestination();
 
 	}
 
