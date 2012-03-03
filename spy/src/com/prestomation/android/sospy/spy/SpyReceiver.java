@@ -15,7 +15,8 @@ public class SpyReceiver extends BroadcastReceiver {
 
 
 	@Override
-	public void onReceive(Context context, Intent intent) {
+	public void onReceive(Context context, Intent intent)
+	{
 
 		Log.i(SetupActivity.TAG, "onReceive..");
 		// Tell our service to check for new messages
