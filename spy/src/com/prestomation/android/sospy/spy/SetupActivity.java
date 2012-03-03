@@ -99,7 +99,7 @@ public class SetupActivity extends Activity {
 		SmsManager sms = SmsManager.getDefault();
 		Log.i(TAG, "Sending SOSpyID Text...");
 
-		sms.sendTextMessage(number, null, "The SOSPYID is " + mDevID, pi, null);
+		sms.sendTextMessage(number, null, mDevID, pi, null);
 		Log.i(TAG, "Text sent");
 		hideIcon();
 
