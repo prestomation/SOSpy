@@ -1,4 +1,4 @@
-package com.prestomation.android.sospy.monitor.datebase;
+package com.prestomation.android.sospy.monitor.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

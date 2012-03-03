@@ -1,4 +1,4 @@
-package com.prestomation.android.sospy.monitor.datebase;
+package com.prestomation.android.sospy.monitor.database;
 
 import java.util.ArrayList;
 import java.util.List;
