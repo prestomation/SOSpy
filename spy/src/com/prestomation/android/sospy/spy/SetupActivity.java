@@ -31,10 +31,6 @@ public class SetupActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		
-		LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		LocationListener ll = new locListener();
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-
 		SharedPreferences prefs = Prefs.get(this);
 		if (!prefs.contains(PREF_DEVICE_ID)) {
 			// If this is the first run, we must save off our unique ID
@@ -133,41 +129,4 @@ public class SetupActivity extends Activity {
 				PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 		
 	}
-	
-	private class locListener implements LocationListener 
-	{
-		@Override
-		public void onLocationChanged(Location location) 
-		{
-	        if (location != null) 
-	        {
-		        Log.i(SetupActivity.TAG,"New Location: latitude:" + location.getLatitude() + " longitude:" + location.getLongitude());
-		        
-		        final SharedPreferences prefs = Prefs.get(getApplicationContext());
-		        final Location loc = location;
-		        
-		        new Thread(new Runnable() 
-		        {
-					public void run() 
-					{
-				        String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
-				        AppEngineClient client = new AppEngineClient(devID);
-				        
-				        String title = "GPS Location Changed";
-				        String body = "Longitude: " + loc.getLongitude() + "  Latitude: " + loc.getLatitude();
-				        String date = "";
-				        
-				        client.sendSpyData(title, body, date);
-					}
-		        }).start();
-	        }
-		}
-		
-		@Override
-		public void onProviderDisabled(String provider) {}
-		@Override
-		public void onProviderEnabled(String provider) {}
-		@Override
-		public void onStatusChanged(String provider, int status,Bundle extras) {}
-	}	   
 }
