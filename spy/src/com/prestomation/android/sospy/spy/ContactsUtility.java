@@ -17,7 +17,7 @@ public abstract class ContactsUtility {
 	 * @param phoneNumber
 	 *            the specified phone number
 	 * @return the contact's name if the contact exists; otherwise, return the
-	 *         empty string
+	 *         phone number given
 	 */
 	public static final String getPhoneNumber(ContentResolver cr, String phoneNumber) {
 
@@ -35,6 +35,6 @@ public abstract class ContactsUtility {
 		} finally {
 			contactLookupCursor.close();
 		}
-		return "";
+		return phoneNumber;
 	}
 }

