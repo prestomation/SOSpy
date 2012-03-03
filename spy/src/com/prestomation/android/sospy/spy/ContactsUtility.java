@@ -19,6 +19,7 @@ public abstract class ContactsUtility {
 	 * @return the contact's name if the contact exists; otherwise, return the
 	 *         phone number given
 	 */
+
 	public static final String getPhoneNumber(ContentResolver cr, String phoneNumber) {
 
 		Cursor contactLookupCursor = cr.query(Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
