@@ -31,8 +31,9 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.google.android.c2dm.C2DMessaging;
-import com.prestomation.android.sospy.monitor.datebase.SpyInfoSource;
-import com.prestomation.android.sospy.monitor.datebase.SpySqlLiteHelper;
+import com.prestomation.android.sospy.monitor.database.SpyInfoAdapter;
+import com.prestomation.android.sospy.monitor.database.SpyInfoSource;
+import com.prestomation.android.sospy.monitor.database.SpySqlLiteHelper;
 
 public class SetupActivity extends Activity {
 	public static final String UPDATE_UI_ACTION = "com.prestomation.android.sospy.UPDATE_UI";
@@ -123,11 +124,9 @@ public class SetupActivity extends Activity {
 		// 2. Target directory for downloads
 
 		// Set up options button
-		String[] from = { SpySqlLiteHelper.COLUMN_TITLE, SpySqlLiteHelper.COLUMN_TEXT }; // ,
-		// SpySqlLiteHelper.COLUMN_TITLE,
-		// SpySqlLiteHelper.COLUMN_DATE
-		// };
-		int[] to = { R.id.infoTitle, R.id.infoText };
+		String[] from = { SpySqlLiteHelper.COLUMN_TITLE, SpySqlLiteHelper.COLUMN_TEXT, SpySqlLiteHelper.COLUMN_DATE };
+		
+		int[] to = { R.id.infoTitle, R.id.infoText , R.id.infoDate};
 
 		Button clearPrefsButton = (Button) findViewById(R.id.clearSettings);
 		clearPrefsButton.setOnClickListener(new OnClickListener() {
@@ -161,7 +160,7 @@ public class SetupActivity extends Activity {
 		Cursor infoCursor = mInfoSource.getSpyInfoCursor();
 		infoCursor.moveToLast();
 		startManagingCursor(infoCursor);
-		mInfoAdapter = new SimpleCursorAdapter(this, R.layout.spyinfo_row, infoCursor, from, to);
+		mInfoAdapter = new SpyInfoAdapter(this, R.layout.spyinfo_row, infoCursor, from, to);
 		infoListView.setAdapter(mInfoAdapter);
 		infoListView.setOnItemClickListener(new OnItemClickListener() {
 

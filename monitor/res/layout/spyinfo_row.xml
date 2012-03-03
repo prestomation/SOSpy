@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:id="@+id/spyLayout" android:layout_width="wrap_content"
-	android:layout_height="wrap_content" android:orientation="vertical" android:minHeight="40px">
-	<TextView android:id="@+id/infoTitle"
-		xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:text="title" />
+	android:id="@+id/spyLayout" android:layout_width="fill_parent"
+	android:layout_height="wrap_content" android:orientation="vertical"
+	android:minHeight="40px">
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/spyLayout" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:orientation="horizontal">
+		<TextView android:id="@+id/infoTitle"
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"
+			android:text="title" android:layout_alignParentLeft="true" />
+		<TextView android:id="@+id/infoDate"
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:text="date" android:layout_alignParentRight="true" />
+	</RelativeLayout>
 	<TextView android:id="@+id/infoText"
 		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:text="text" android:visibility="gone"/>
+		android:text="text" android:visibility="gone" />
 </LinearLayout>

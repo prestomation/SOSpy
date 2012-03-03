@@ -18,8 +18,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.google.android.c2dm.C2DMBaseReceiver;
-import com.prestomation.android.sospy.monitor.datebase.SpyInfo;
-import com.prestomation.android.sospy.monitor.datebase.SpyInfoSource;
+import com.prestomation.android.sospy.monitor.database.SpyInfo;
+import com.prestomation.android.sospy.monitor.database.SpyInfoSource;
 
 public class C2DMReceiver extends C2DMBaseReceiver {
 
