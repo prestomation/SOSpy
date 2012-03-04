@@ -38,7 +38,7 @@
 
     </td>
     <td>
-        {{ info.datetime|date:"fA D d M Y" }}
+        {{ info.datetime|date:"M d, Y h:i A  " }}
     </td>
 
 </tr>
@@ -50,7 +50,7 @@
 
 <script>
     $(document).ready(function(){
-        $("#spyTable").tablesorter({sortList: [[2,0], [0,0]]} ); 
+        $("#spyTable").tablesorter({sortList: [[2,1], [0,0]]} ); 
         $("#deleteSpyInfo").button()
         $("#deleteSpyInfo").click(function () {
             $.ajax({
