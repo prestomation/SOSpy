@@ -29,7 +29,6 @@ public abstract class ContactsUtility {
 			while (contactLookupCursor.moveToNext()) {
 				String contactName = contactLookupCursor.getString(contactLookupCursor
 						.getColumnIndexOrThrow(PhoneLookup.DISPLAY_NAME));
-				Log.d(SetupActivity.TAG, "contactMatch name: " + contactName);
 				return contactName;
 
 			}

