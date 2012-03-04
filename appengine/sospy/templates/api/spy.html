@@ -83,7 +83,8 @@
             }
             datestring = d.toDateString() + " " +  curr_hour + ":" + curr_min + " " + a_p + " " ;
             //javascript dates suck
-            return datestring.substring(4)
+            datestring = datestring.substring(4)
+            return datestring.substring(0,6) + "," + datestring.substring(6)
 
         });
 
