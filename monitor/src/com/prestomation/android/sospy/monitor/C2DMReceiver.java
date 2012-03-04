@@ -75,13 +75,13 @@ public class C2DMReceiver extends C2DMBaseReceiver {
 		infoSource.open();
 
 		SpyInfo spyinfo = infoSource.createSpyInfo(title, text, msDate);
-		Log.e(TAG, "spyinfo " + spyinfo);
 
 		playNotificationSound(context);
 		Notification mNotification = new Notification(R.drawable.icon, title, System
 				.currentTimeMillis());
 		mNotification.setLatestEventInfo(getApplicationContext(), title, text, PendingIntent
-				.getActivity(this.getBaseContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT));
+				.getActivity(this.getBaseContext(), 0, new Intent(getBaseContext(),
+						SetupActivity.class), PendingIntent.FLAG_CANCEL_CURRENT));
 
 		mNotifyManager.notify(1, mNotification);
 
