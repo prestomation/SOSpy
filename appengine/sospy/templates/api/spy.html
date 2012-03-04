@@ -16,8 +16,8 @@
 <table id="spyTable" class="tablesorter" cellspacing="1">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Text</th>
+            <th>Type</th>
+            <th>Info</th>
             <th>Date</th>
         </tr>
     </thead>
@@ -29,7 +29,13 @@
         {{ info.title }}
     </td>
     <td>
+        {% if info.title == "Location Update"%}
+        <a href="http://maps.google.com/maps?q={{ info.text }}">{{ info.text }} </a>
+
+        {% else %}
         {{ info.text }}
+        {% endif %}
+
     </td>
     <td>
         {{ info.datetime|date:"fA D d M Y" }}
