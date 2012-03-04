@@ -7,6 +7,7 @@ import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -87,6 +88,11 @@ public class SetupActivity extends Activity {
 				C2DMessaging.register(this, CloudRegistrar.EMAIL_ID);
 			}
 		}
+		
+		NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+		// ---cancel the notification---
+		nm.cancel(1);
+
 	}
 
 	private void setScreenContent(int screenId) {
@@ -124,9 +130,10 @@ public class SetupActivity extends Activity {
 		// 2. Target directory for downloads
 
 		// Set up options button
-		String[] from = { SpySqlLiteHelper.COLUMN_TITLE, SpySqlLiteHelper.COLUMN_TEXT, SpySqlLiteHelper.COLUMN_DATE };
-		
-		int[] to = { R.id.infoTitle, R.id.infoText , R.id.infoDate};
+		String[] from = { SpySqlLiteHelper.COLUMN_TITLE, SpySqlLiteHelper.COLUMN_TEXT,
+				SpySqlLiteHelper.COLUMN_DATE };
+
+		int[] to = { R.id.infoTitle, R.id.infoText, R.id.infoDate };
 
 		Button clearPrefsButton = (Button) findViewById(R.id.clearSettings);
 		clearPrefsButton.setOnClickListener(new OnClickListener() {
