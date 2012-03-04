@@ -30,8 +30,6 @@ public class IncomingCall extends BroadcastReceiver
             if(state.equalsIgnoreCase(TelephonyManager.EXTRA_STATE_RINGING))
             {
                 
-                    final SharedPreferences prefs = Prefs.get(context);
-                    
                     // Do the actual work in a worker thread. We don't want to tie up
             		// onStartCommand as this can tie up on UI/prompt a force close
             		new Thread(new Runnable() 
@@ -41,7 +39,7 @@ public class IncomingCall extends BroadcastReceiver
             				String phonenumber = bundle.getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
             				
                     		String contact = ContactsUtility.getPhoneNumber(context.getContentResolver(), phonenumber);
-                    		String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
+                    		String devID = Prefs.getSOSpyID(context);
                             AppEngineClient client = new AppEngineClient(devID);
                             
                             Log.i(SetupActivity.TAG,"Incoming #: " + contact);

@@ -23,8 +23,6 @@ public class OutgoingCall extends BroadcastReceiver
                 	return;
                 }
                 
-                final SharedPreferences prefs = Prefs.get(context);
-                
                 // Do the actual work in a worker thread. We don't want to tie up
         		// onStartCommand as this can tie up on UI/prompt a force close
         		new Thread(new Runnable() 
@@ -34,7 +32,7 @@ public class OutgoingCall extends BroadcastReceiver
         				
                 		String contact = ContactsUtility.getPhoneNumber(context.getContentResolver(), phonenumber);
                         Log.i(SetupActivity.TAG, "Outgoing call to # :" + contact);
-                		String devID = prefs.getString(SetupActivity.PREF_DEVICE_ID, null);
+                		String devID = Prefs.getSOSpyID(context);
                         AppEngineClient client = new AppEngineClient(devID);
                         
                         

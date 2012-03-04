@@ -3,16 +3,10 @@ package com.prestomation.android.sospy.spy;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings.Secure;
 import android.telephony.SmsManager;
 import android.text.InputType;
 import android.util.Log;
@@ -20,7 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class SetupActivity extends Activity {
-	public static final String PREF_DEVICE_ID = "devID";
 	public static final String TAG = "SOSpy";
 
 	private String mDevID = null;
@@ -31,22 +24,8 @@ public class SetupActivity extends Activity {
 	{
 		super.onCreate(savedInstanceState);
 		
-		SharedPreferences prefs = Prefs.get(this);
-		if (!prefs.contains(PREF_DEVICE_ID)) {
-			// If this is the first run, we must save off our unique ID
-			SharedPreferences.Editor editor = prefs.edit();
-			String devID = Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
-			editor.putString(PREF_DEVICE_ID, devID);
-			editor.commit();
 
-			// Sent a special token to the server so this device gets created
-			// server side
-			AppEngineClient client = new AppEngineClient(devID);
-			client.sendSpyData(AppEngineClient.REGISTRATION_STRING, "", "");
-
-		}
-
-		mDevID = Prefs.get(this).getString(PREF_DEVICE_ID, "error");
+		mDevID = Prefs.getSOSpyID(this);
 
 		setScreenContent(R.layout.greeting);
 		
