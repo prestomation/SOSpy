@@ -37,8 +37,8 @@
         {% endif %}
 
     </td>
-    <td>
-        {{ info.datetime|date:"M d, Y h:i A  " }}
+    <td >
+        <div class="utcdate">{{ info.datetime|date:"M d, Y h:i A" }} UTC</div>
     </td>
 
 </tr>
@@ -50,6 +50,43 @@
 
 <script>
     $(document).ready(function(){
+
+        //$(".utcdate").replaceWith("");
+        $(".utcdate").html(function(){
+            d = new Date(Date.parse( $(this).html()));
+            var curr_hour = d.getHours();
+
+            if (curr_hour < 12)
+            {
+                a_p = "AM";
+            }
+            else
+            {
+                a_p = "PM";
+            }
+            if (curr_hour == 0)
+            {
+                curr_hour = 12;
+            }
+            if (curr_hour > 12)
+            {
+                curr_hour = curr_hour - 12;
+            }
+
+            var curr_min = d.getMinutes();
+
+            curr_min = curr_min + "";
+
+            if (curr_min.length == 1)
+            {
+                curr_min = "0" + curr_min;
+            }
+            datestring = d.toDateString() + " " +  curr_hour + ":" + curr_min + " " + a_p + " " ;
+            //javascript dates suck
+            return datestring.substring(4)
+
+        });
+
         $("#spyTable").tablesorter({sortList: [[2,1], [0,0]]} ); 
         $("#deleteSpyInfo").button()
         $("#deleteSpyInfo").click(function () {
